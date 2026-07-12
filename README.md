@@ -5,8 +5,7 @@ Smartphone-App zur automatisierten Erkennung und Wertschätzung von Gegenstände
 ## Einleitung
 CollectAll erkennt und segmentiert Gegenstände auf Fotos, schätzt deren Marktwert und speichert sie in einer lokalen Sammlung.
 
-> 🚧 **Projekt-Status:** 
-> Dieses Repository dient aktuell als Architektur- und Konzept-Dokumentation für das Frontend. Der eigentliche Source-Code wird in Kürze in diesem Repository veröffentlicht. Das Backend (FastAPI, KI-Pipelines) ist bereits live im Einsatz.
+🚧 Projekt-Status: Der Quellcode dieses Projekts ist aktuell privat. Dieses Repository dient als Architektur-Dokumentation und Portfolio-Showcase.
 
 ### 🛠 Tech Stack
 
@@ -29,7 +28,8 @@ CollectAll erkennt und segmentiert Gegenstände auf Fotos, schätzt deren Marktw
 ![Sentence-Transformers](https://img.shields.io/badge/Sentence--Transformers-FF6F00?style=flat&logo=python&logoColor=white)
 
 ## App Demo
-<video src="assets/CollectAll_Demo.mov" width="250" controls></video>
+<video src="https://github.com/Strong0001/CollectAll/raw/main/assets/CollectAll_Demo.mov" controls="controls" width="100%">
+</video>
 
 ## Features
 
@@ -84,7 +84,7 @@ Die App nutzt eine hierarchische Struktur zur effizienten Verwaltung der gespeic
   <img src="assets/Valuation.jpg" width="250"><br>
   <sub>Wertermittlung Beispiel 7 Tage</sub>
 </p>
-Die App aktualisiert und visualisiert den Marktwert der Sammlung kontinuierlich:
+Die App aktualisiert und visualisiert den Marktwert der Sammlung kontinuierlich:<br><br>
 
 * **Automatisierte Neuschätzung:** Ein App-Start triggert (maximal einmal pro Stunde) ein automatisches Neuschätzen aller gespeicherten Gegenstände durch die aktuellsten XGBoost-Modelle bei genug Daten.
 * **Portfolio-Graphen (Hauptseite):** Visuelle Darstellung der globalen Wertentwicklung der gesamten Sammlung.
@@ -96,7 +96,7 @@ Die App aktualisiert und visualisiert den Marktwert der Sammlung kontinuierlich:
   <img src="assets/Admin_Overview.jpg" width="250"><br>
   <sub>Admin Übersicht</sub>
 </p>
-Ein rollenbasierter Zugriff schützt die Verwaltungsfunktionen auf der Hauptseite:
+Ein rollenbasierter Zugriff schützt die Verwaltungsfunktionen auf der Hauptseite:<br><br>
 
 * **Admin-Zugang:** Nur autorisierte Administratoren sehen den Einstellungs-Bereich.
 * **Datenverwaltung:** Voller Lese- und Schreibzugriff auf alle Systemeinstellungen, Nutzerdaten und Kategorien.
@@ -108,7 +108,7 @@ Ein rollenbasierter Zugriff schützt die Verwaltungsfunktionen auf der Hauptseit
   <img src="assets/Category_Change.jpg" width="250"><br>
   <sub>Kategorien Übersicht</sub>
 </p>
-Die App bietet verschiedene Abonnement-Stufen, die festlegen, wie viele Kategorien gleichzeitig vom System verarbeitet werden können.
+Die App bietet verschiedene Abonnement-Stufen, die festlegen, wie viele Kategorien gleichzeitig vom System verarbeitet werden können.<br><br>
 
 * **Dynamische Kategorie-Auswahl:** Aus einem Pool aller aktuell live geschalteten Kategorien können Nutzer – limitiert durch ihr jeweiliges Abo-Modell – ihr individuelles Set an aktiven Kategorien frei zusammenstellen, welche die App erkennen und speichern soll.
 
