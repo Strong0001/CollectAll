@@ -28,8 +28,7 @@ CollectAll erkennt und segmentiert Gegenstände auf Fotos, schätzt deren Marktw
 ![Sentence-Transformers](https://img.shields.io/badge/Sentence--Transformers-FF6F00?style=flat&logo=python&logoColor=white)
 
 ## App Demo
-<video src="https://github.com/Strong0001/CollectAll/raw/main/assets/CollectAll_Demo.mov" controls="controls" width="100%">
-</video>
+<video src="https://github.com/Strong0001/CollectAll/blob/main/assets/CollectAll_Demo.mp4?raw=true" controls muted playsinline width="100%"></video>
 
 ## Features
 
