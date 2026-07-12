@@ -29,14 +29,14 @@ CollectAll erkennt und segmentiert Gegenstände auf Fotos, schätzt deren Marktw
 ![Sentence-Transformers](https://img.shields.io/badge/Sentence--Transformers-FF6F00?style=flat&logo=python&logoColor=white)
 
 ## App Demo
-https://github.com/Strong0001/CollectAll/blob/main/assets/CollectAll_Demo.mp4
+https://github.com/user-attachments/assets/f27da0ab-6f62-4416-a31b-f4659b67d5d7
 
 ## Features
 
 ### 1. Security & Auth
 Der Zugriff auf das Backend ist zweifach abgesichert:
 * **User-Auth:** Login und Registrierung laufen stateless über **JWT Tokens**.
-* **API-Schutz:** Alle Endpunkte prüfen zusätzlich einen App-spezifischen Schlüssel (X-App-Access-Key).
+* **API-Schutz:** Alle Endpunkte prüfen zusätzlich einen App-spezifischen Schlüssel.
 
 <table align="center">
   <tr>
