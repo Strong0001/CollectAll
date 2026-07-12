@@ -29,7 +29,7 @@ CollectAll erkennt und segmentiert Gegenstände auf Fotos, schätzt deren Marktw
 ![Sentence-Transformers](https://img.shields.io/badge/Sentence--Transformers-FF6F00?style=flat&logo=python&logoColor=white)
 
 ## App Demo
-<video src="screenshots/CollectAll_Demo.mov" width="250" controls></video>
+<video src="assets/CollectAll_Demo.mov" width="250" controls></video>
 
 ## Features
 
@@ -41,11 +41,11 @@ Der Zugriff auf das Backend ist zweifach abgesichert:
 <table align="center">
   <tr>
     <td align="center" style="border: none;">
-      <img src="screenshots/Login.jpg" width="230"><br>
+      <img src="assets/Login.jpg" width="230"><br>
       <sub>Login</sub>
     </td>
     <td align="center" style="border: none;">
-      <img src="screenshots/Register.jpg" width="230"><br>
+      <img src="assets/Register.jpg" width="230"><br>
       <sub>Registrierung</sub>
     </td>
   </tr>
@@ -81,7 +81,7 @@ Die App nutzt eine hierarchische Struktur zur effizienten Verwaltung der gespeic
 
 ### 5. Wertentwicklung & Datenvisualisierung
 <p align="center">
-  <img src="screenshots/Valuation.jpg" width="250"><br>
+  <img src="assets/Valuation.jpg" width="250"><br>
   <sub>Wertermittlung Beispiel 7 Tage</sub>
 </p>
 Die App aktualisiert und visualisiert den Marktwert der Sammlung kontinuierlich:
@@ -93,7 +93,7 @@ Die App aktualisiert und visualisiert den Marktwert der Sammlung kontinuierlich:
 
 ### 6. Admin-Panel & Konfiguration
 <p align="center">
-  <img src="screenshots/Admin_Overview.jpg" width="250"><br>
+  <img src="assets/Admin_Overview.jpg" width="250"><br>
   <sub>Admin Übersicht</sub>
 </p>
 Ein rollenbasierter Zugriff schützt die Verwaltungsfunktionen auf der Hauptseite:
@@ -105,7 +105,7 @@ Ein rollenbasierter Zugriff schützt die Verwaltungsfunktionen auf der Hauptseit
 
 ### 7. Abo-Modell & Kategorien wählen
 <p align="center">
-  <img src="screenshots/Category_Change.jpg" width="250"><br>
+  <img src="assets/Category_Change.jpg" width="250"><br>
   <sub>Kategorien Übersicht</sub>
 </p>
 Die App bietet verschiedene Abonnement-Stufen, die festlegen, wie viele Kategorien gleichzeitig vom System verarbeitet werden können.
@@ -115,6 +115,6 @@ Die App bietet verschiedene Abonnement-Stufen, die festlegen, wie viele Kategori
 ## Architektur & Datenfluss
 
 <p align="center">
-  <img src="screenshots/Collectall_Architecture.png"><br>
+  <img src="assets/Collectall_Architecture.png"><br>
   <sub>System-Architektur und Datenfluss</sub>
 </p>
