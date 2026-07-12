@@ -5,7 +5,8 @@ Smartphone-App zur automatisierten Erkennung und Wertschätzung von Gegenstände
 ## Einleitung
 CollectAll erkennt und segmentiert Gegenstände auf Fotos, schätzt deren Marktwert und speichert sie in einer lokalen Sammlung.
 
-🚧 Projekt-Status: Der Quellcode dieses Projekts ist aktuell privat. Dieses Repository dient als Architektur-Dokumentation und Portfolio-Showcase.
+>🚧 Projekt-Status: 
+> Der Quellcode dieses Projekts ist aktuell privat. Dieses Repository dient als Architektur-Dokumentation und Portfolio-Showcase.
 
 ### 🛠 Tech Stack
 
@@ -28,7 +29,7 @@ CollectAll erkennt und segmentiert Gegenstände auf Fotos, schätzt deren Marktw
 ![Sentence-Transformers](https://img.shields.io/badge/Sentence--Transformers-FF6F00?style=flat&logo=python&logoColor=white)
 
 ## App Demo
-<video src="https://github.com/Strong0001/CollectAll/blob/main/assets/CollectAll_Demo.mp4?raw=true" controls muted playsinline width="100%"></video>
+https://github.com/Strong0001/CollectAll/blob/main/assets/CollectAll_Demo.mp4
 
 ## Features
 
