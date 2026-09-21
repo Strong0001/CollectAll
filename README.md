@@ -47,7 +47,7 @@ CollectAll ist eine Full-Stack-Anwendung, die On-Device Machine Learning (SAM 2 
 ---
 
 ## App Demo
-https://github.com/user-attachments/assets/f366468f-ec7a-4794-8d62-cb46176b049b
+https://github.com/user-attachments/assets/77950b01-b0fa-4f32-b532-d1c00bd44dd5
 
 
 
