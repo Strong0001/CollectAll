@@ -57,7 +57,7 @@ https://github.com/user-attachments/assets/91729379-4464-4555-9b41-2fad0eb0a9d6
 
 ---
 
-## Systemarchitektur & Data Flow
+## Systemarchitektur & Datenfluss
 
 Das System basiert auf einer strikten Trennung zwischen mobilem Client, Backend-Services und asynchronen Workern, um Skalierbarkeit und Ausfallsicherheit zu gewährleisten.
 
@@ -66,7 +66,7 @@ Das System basiert auf einer strikten Trennung zwischen mobilem Client, Backend-
   <sub>High-Level Architektur: Client, Cloud Compute, Data Layer & Pipelines</sub>
 </p>
 
-### Architecture & Design Decisions
+### Architektur & Design-Entscheidungen
 Dieses Projekt wurde mit einem starken Fokus auf Kostenoptimierung, Latenzreduzierung und Ausfallsicherheit entworfen:
 
 * **Edge-Compute & Asynchrone Parallelisierung (SAM 2 via ONNX):**<br> Die rechenintensive Generierung der Bild-Embeddings für die Segmentierung wurde bewusst als ONNX-Modell (Encoder/Decoder) direkt auf das Endgerät des Nutzers ausgelagert. Diese lokale Edge-Inferenz läuft asynchron und exakt parallel zur KI-Analyse im Backend.<br>
@@ -99,7 +99,7 @@ Die Deployment-Pipeline wird durch einen Merge in den `main`-Branch getriggert u
 
 ---
 
-## Core Features & UX
+## Hauptfunktionen & UX
 
 ### 1. Kamera-Scan & Interaktive Erkennung
 <p align="center">
