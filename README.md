@@ -19,7 +19,7 @@ CollectAll ist eine Full-Stack-Anwendung, die On-Device Machine Learning (SAM 2 
 **Backend**
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-05998B?style=flat&logo=fastapi&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white)
+![Azure PostgreSQL](https://img.shields.io/badge/Azure%20PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-000000?style=flat&logo=jsonwebtokens&logoColor=white)
 
 **Cloud & Infrastruktur**
