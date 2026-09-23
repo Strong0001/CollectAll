@@ -48,9 +48,7 @@ CollectAll ist eine Full-Stack-Anwendung, die On-Device Machine Learning (SAM 2 
 
 ## App Demo
 https://github.com/user-attachments/assets/91729379-4464-4555-9b41-2fad0eb0a9d6
-
-
-
+> Im Video sind für diesen User-Account ausschließlich die Kategorien *Lego Sets* und *Videospiele* aktiv.
 
 
 
