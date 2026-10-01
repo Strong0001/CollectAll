@@ -2,11 +2,18 @@
 
 **Verteiltes KI-System zur Edge-basierten Bildsegmentierung und automatisierten Marktwertschätzung per Kamera-Scan.**
 
+
+## App Demo
+https://github.com/user-attachments/assets/91729379-4464-4555-9b41-2fad0eb0a9d6
+> Im Video sind für diesen User-Account ausschließlich die Kategorien *Lego Sets* und *Videospiele* aktiv.
+
+
 ## Einleitung
 
 CollectAll ist eine Full-Stack-Anwendung, die On-Device Machine Learning (SAM 2 Tiny) mit einer asynchronen, cloud-basierten Microservice-Architektur kombiniert. Das System segmentiert Gegenstände auf Fotos, schätzt deren Marktwert anhand realer Marktdaten mit trainierten ML-Modellen und speichert sie in einer lokalen Sammlung.
 
 > 🚧 **Projekt-Status:** Der Quellcode dieses Projekts ist aktuell privat. Dieses Repository dient als Architektur-Dokumentation und Portfolio-Showcase für Systemdesign, KI-Integration und CI/CD-Pipelines.
+
 
 ### 🛠 Tech Stack
 
@@ -40,13 +47,6 @@ CollectAll ist eine Full-Stack-Anwendung, die On-Device Machine Learning (SAM 2 
 ![C#](https://img.shields.io/badge/C%23-239120?style=flat&logo=csharp&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-07405E?style=flat&logo=sqlite&logoColor=white)
 
----
-
-## App Demo
-https://github.com/user-attachments/assets/91729379-4464-4555-9b41-2fad0eb0a9d6
-> Im Video sind für diesen User-Account ausschließlich die Kategorien *Lego Sets* und *Videospiele* aktiv.
-
----
 
 ## Systemarchitektur & Datenfluss
 
@@ -57,7 +57,6 @@ Das System basiert auf einer strikten Trennung zwischen mobilem Client, Backend-
   <sub>High-Level Architektur: Client, Cloud Compute, Data Layer & Pipelines</sub>
 </p>
 
----
 
 ### Architektur & Design-Entscheidungen
 
@@ -95,7 +94,6 @@ Die Deployment-Pipeline wird durch einen Merge in den `main`-Branch getriggert u
 * **Phase 2: Automated Integration Testing (Azure Container Apps Jobs):** Die Pipeline triggert automatisch einen Azure Container Apps Job, der das Image im Zusammenspiel mit einer separaten Test-Datenbank validiert (Datenbank-Migrationen und Service-Kommunikation).
 * **Phase 3: Production Deployment (Revision Gating):** Nach erfolgreichem Integrationstest rollt die Pipeline das validierte Image als neue **Azure Container App Revision** aus (Zero-Downtime).
 
----
 
 ## Hauptfunktionen & UX
 
@@ -169,4 +167,5 @@ Cloud-Synchronisierung und ein sicheres Authentifizierungssystem ermöglichen de
 
 Autorisierte Accounts können neue Kategorien, Merkmale und UI-Labels zur Laufzeit erstellen und freischalten. Das Dashboard bietet zudem Live-Analytics zur Überwachung von Systemdaten wie durchschnittlicher Scan-Dauer, Verarbeitungsvolumen und exakten API-Kosten in Echtzeit.
 
----
+
+
