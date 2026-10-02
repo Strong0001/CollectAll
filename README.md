@@ -16,7 +16,7 @@ CollectAll ist eine Full-Stack-Anwendung, die On-Device Machine Learning (SAM 2 
 > **Projekt-Status:** Der Quellcode dieses Projekts ist aktuell privat. Dieses Repository dient als Architektur-Dokumentation und Portfolio-Showcase für Systemdesign, KI-Integration und CI/CD-Pipelines.
 
 
-### 🛠 Tech Stack
+### Tech Stack
 
 **KI & Machine Learning**  
 ![Meta SAM 2](https://img.shields.io/badge/Meta%20SAM2-0668E1?style=flat&logo=meta&logoColor=white)
