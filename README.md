@@ -1,6 +1,6 @@
 # CollectAll
 
-**Verteiltes KI-System zur Edge-basierten Bildsegmentierung und automatisierten Marktwertschätzung per Kamera-Scan.**
+**Verteiltes KI-System zur Edge-basierten Bildsegmentierung und automatisierten Erkennung und Marktwertschätzung von Gegenständen per Kamera-Scan.**
 
 
 ## App Demo
