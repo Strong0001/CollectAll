@@ -159,7 +159,7 @@ Nahtlose Sprachumschaltung (Deutsch/Englisch) der Benutzeroberfläche und aller 
   <sub>Sichere Nutzer-Registrierung</sub>
 </p>
 
-Cloud-Synchronisierung und ein sicheres Authentifizierungssystem ermöglichen den nahtlosen Zugriff auf den eigenen Bestand über verschiedene Geräte hinweg.
+Nutzer-Accounts und JWT-basierte Authentifizierung sichern den Zugriff auf geschützte Backend-Funktionen. Persönliche Sammlungsdaten werden lokal in SQLite auf dem Endgerät gespeichert.
 
 ### 8. Admin-Dashboard & Live-Analytics
 
@@ -176,7 +176,7 @@ Cloud-Synchronisierung und ein sicheres Authentifizierungssystem ermöglichen de
   </tr>
 </table>
 
-Autorisierte Accounts können neue Kategorien, Merkmale und UI-Labels zur Laufzeit erstellen und freischalten. Das Dashboard bietet zudem Live-Analytics zur Überwachung von Systemdaten wie durchschnittlicher Scan-Dauer, Verarbeitungsvolumen und exakten API-Kosten in Echtzeit.
+Administratoren können neue Kategorien, Merkmale und UI-Labels zur Laufzeit erstellen, ändern und freischalten. Das Admin-Dashboard bietet zudem Live-Analytics zu Scan-Dauer, Verarbeitungsvolumen und API-Kosten.
 
 ---
 
