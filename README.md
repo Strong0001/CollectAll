@@ -11,7 +11,7 @@ https://github.com/user-attachments/assets/91729379-4464-4555-9b41-2fad0eb0a9d6
 
 ## Einleitung
 
-CollectAll ist eine Full-Stack-Anwendung, die On-Device Machine Learning (SAM 2 Tiny) mit einer asynchronen, cloud-basierten Microservice-Architektur kombiniert. Das System segmentiert Gegenstände auf Fotos, schätzt deren Marktwert anhand realer Marktdaten mit trainierten ML-Modellen und speichert sie in einer lokalen Sammlung.
+CollectAll ist eine Full-Stack-Anwendung zur kamerabasierten Erfassung und Bewertung von Gegenständen. Eine On-Device-ML-Pipeline segmentiert mehrere Gegenstände innerhalb eines Bildes und ermöglicht deren gezielte Auswahl. Erkannte Gegenstände werden anhand kategorispezifischer Merkmale analysiert und durch trainierte ML-Modelle bewertet. Änderungen wertrelevanter Merkmale führen zu einer aktualisierten Schätzung.
 
 > **Projekt-Status:** Der Quellcode dieses Projekts ist aktuell privat. Dieses Repository dient als Architektur-Dokumentation und Portfolio-Showcase für Systemdesign, KI-Integration und CI/CD-Pipelines.
 
@@ -67,14 +67,14 @@ Das System basiert auf einer strikten Trennung zwischen mobilem Client, Backend-
 Dieses Projekt wurde mit Fokus auf Kostenoptimierung, Latenzreduzierung und Ausfallsicherheit entworfen:
 
 * **Edge-Compute & Asynchrone Parallelisierung (SAM 2 via ONNX):**<br>
-Die rechenintensive Generierung der Bild-Embeddings für die Segmentierung wurde als ONNX-Modell (Encoder/Decoder) auf das Endgerät des Nutzers ausgelagert. Diese lokale Edge-Inferenz läuft asynchron und parallel zur KI-Analyse im Backend.<br>
+Die rechenintensive Generierung der Bild-Embeddings für die Segmentierung wurde als ONNX-Modell auf das Endgerät des Nutzers ausgelagert. Diese lokale Edge-Inferenz läuft asynchron und parallel zur KI-Analyse im Backend.<br>
 **Problem & Lösung:** <br>
   Um den Scan-Vorgang durch überlappende Ladezeiten zu beschleunigen und nutzerproportionale Compute-Ressourcen (GPUs) im Azure-Backend zu vermeiden, wird die schwere Rechenlast stabil auf die Client-Geräte verteilt.
-
-* **LLM-Skalierung: Context Caching & Semantic Vector Matching:**<br>
-Um das System bei einer wachsenden Anzahl an Kategorien kosteneffizient und performant zu halten, nutzt die Architektur eine zweigleisige LLM-Strategie. Der System-Prompt ist strikt segmentiert: Der statische Payload (System-Prompt & Schablonen) triggert ab dem Erreichen der Token-Mindestgröße automatisch das Context Caching der API (Gemini). Bei jedem Scan werden dann nur noch minimale Parameter (aktive Kategorien und das Bild) dynamisch injiziert.<br>
+  
+* **LLM-Skalierung: Context Caching & Semantic Matching:**<br>
+Um das System bei einer wachsenden Anzahl an Kategorien kosteneffizient und performant zu halten, trennt die Architektur statische und scanabhängige Kontextinformationen. Wiederverwendbare Prompt-Anteile werden gecacht, während pro Scan nur die tatsächlich benötigten dynamischen Informationen verarbeitet werden.<br>
 **Problem & Lösung:** <br>
-  Die direkte Übergabe aller in der Datenbank bereits bekannten Gegenstandsnamen (z. B. zehntausende Filmtitel oder Lego-Sets) im Prompt würde das Context Window sprengen und hohe Latenzen verursachen. Auf den Versand dieser Listen an die KI wird daher verzichtet. Die Schablonen weisen die KI stattdessen an, eine freie Namensvorhersage zu generieren. Das Backend vektorisiert diesen Text-Output zur Laufzeit über ein lokal ausgeführtes Sentence-Transformer-Modell und nutzt eine Vektor-Suche in Azure Redis, um die KI-Schätzung semantisch und fehlertolerant auf den korrekten Datenbankeintrag zu mappen.
+  Eine direkte Übergabe großer Referenzlisten bekannter Gegenstände an das LLM würde Tokenverbrauch und Latenz mit wachsendem Datenbestand stark erhöhen. Stattdessen erzeugt die KI eine freie Objektbezeichnung, die das Backend anschließend über semantisches Matching fehlertolerant einem bekannten Datenbankeintrag zuordnet. Dadurch bleibt die Analyse auch bei großen Datenbeständen performant, ohne umfangreiche Referenzdaten in jedem Request übertragen zu müssen.
 
 * **Distributed Caching & Concurrency Control (Redis):**<br>
 Um Latenzen zu minimieren und denselben Datenstand über mehrere zustandslose Backend-Replikate hinweg zu garantieren, werden Systemdaten in über 10 logisch getrennten Cache-Bereichen in Redis vorgehalten.<br>
@@ -82,53 +82,52 @@ Um Latenzen zu minimieren und denselben Datenstand über mehrere zustandslose Ba
   Bei gleichzeitig eintreffenden Scans unbekannter Gegenstände durch verschiedene Nutzer drohen Race Conditions und damit mögliche Duplikate in der Datenbank. Das System nutzt deshalb einen Cache-First Lookup mit transaktionalem Re-Check: Die rechenintensive Embedding-Generierung und der erste Lookup erfolgen lock-free gegen den Redis-Cache. Nur bei einem Cache Miss wird eine kurze PostgreSQL-Transaktion (Pessimistic Locking) geöffnet, ein zweiter Check direkt auf der Datenbank ausgeführt und erst dann persistiert. Dadurch werden konkurrierende Schreibvorgänge kontrolliert, ohne die Performance für bereits bekannte Gegenstände auszubremsen.
 
 * **Adaptive Modellwahl & automatisiertes Retraining (Azure ML AutoML):**<br>
-Für jede Kategorie überwacht ein stündlicher Controller das Wachstum der Trainingsdaten. Bei moderatem Datenzuwachs wird das aktuelle Produktionsmodell mit seinen bestehenden Hyperparametern vollständig auf allen verfügbaren Daten neu trainiert. Erst bei stärkerem Datenwachstum wird erneut Azure ML AutoML ausgeführt, um verschiedene Regressionsalgorithmen und Hyperparameter zu vergleichen. Das ausgewählte Modell wird anschließend mit einer einheitlichen Preprocessing-Pipeline auf allen aktuellen Daten neu trainiert, versioniert in Azure Blob Storage veröffentlicht und vom Scan-Backend für die Preisprognose geladen.<br>
+Für jede Kategorie überwacht eine automatisierte ML-Pipeline das Wachstum der Trainingsdaten. Bei moderatem Datenzuwachs wird das bestehende Produktionsmodell mit seiner aktuellen Konfiguration neu trainiert. Bei größerem Datenzuwachs wird erneut Azure ML AutoML ausgeführt, um geeignete Regressionsalgorithmen und Hyperparameter zu vergleichen. Das ausgewählte Modell wird anschließend über eine einheitliche Preprocessing- und Deployment-Pipeline neu trainiert, versioniert und für die Preisprognose bereitgestellt.<br>
 **Problem & Lösung:** <br>
   Ein festgelegter Algorithmus ist nicht dauerhaft für jeden Datenbestand optimal, während ein vollständiger AutoML-Lauf nach jeder kleinen Datenänderung unnötige Compute-Kosten verursachen würde. Das System trennt deshalb kostengünstiges Retraining von der aufwendigeren Modellselektion. So bleibt das Produktionsmodell auf dem aktuellen Datenstand und AutoML prüft nur bei ausreichend neuen Daten, ob ein besser geeignetes Modell oder andere Hyperparameter verfügbar sind.
 
 * **Hybride Marktdaten-Beschaffung (Tiered Fallback):**<br>
-Um die Kosten iterativer KI-Websuchen zu minimieren, nutzt das System eine gestufte hybride Architektur in autarken Azure Container Apps Jobs: Zunächst fragt der Worker strukturierte Rohdaten in hoher Stückzahl über die eBay API ab. Ein Analyse-Agent ordnet die Ergebnisse exakt den vorgegebenen Merkmalen zu. Nur bei unzureichender API-Ausbeute triggert der Job als Fallback einen autonomen KI-Agenten für eine offene Websuche.<br>
+Zur kosteneffizienten Beschaffung realer Marktdaten kombiniert das System strukturierte Datenquellen mit einer KI-gestützten Webrecherche. Primär werden verfügbare strukturierte Marktdaten verarbeitet; nur bei unzureichender Datenlage wird eine breitere Recherche ausgelöst. Die Ergebnisse werden anschließend merkmalsbezogen validiert und für die ML-Pipeline aufbereitet.<br>
 **Problem & Lösung:** <br>
-  Um das Frontend nicht zu blockieren, werden Suchaufträge zunächst in PostgreSQL geschrieben und in eine Azure Queue überführt. Diese triggert asynchron einen Azure Container Apps Job. Die validierten Preisdaten stehen anschließend unabhängig vom Scan-Prozess für die ML-Pipeline zur Verfügung.
+  Marktrecherche kann sowohl zeit- als auch kostenintensiv sein und soll den eigentlichen Scan-Prozess nicht blockieren. Deshalb erfolgt die Verarbeitung entkoppelt über eine asynchrone Queue- und Job-Pipeline in Azure. Validierte Marktdaten stehen anschließend unabhängig vom Scan-Prozess für Modelltraining und Preisaktualisierungen zur Verfügung.
 
-* **Dynamic Data Modeling & Zero-Downtime Deployments:**<br>
-Das System ermöglicht die vollständige Erstellung und Modifikation neuer Gegenstandskategorien und deren Merkmale zur Laufzeit über ein Admin-Panel. Bei der Freischaltung führt das Backend automatisierte Schema-Änderungen (DDL) aus, legt Tabellenstrukturen an, baut In-Memory-Caches neu auf und aktualisiert das globale App-Schema.<br>
+* **Dynamic Data Modeling & Server-Driven Architecture:**<br>
+Das System ermöglicht die Erstellung und Modifikation neuer Gegenstandskategorien und ihrer Merkmale zur Laufzeit über ein Admin-Panel. Die dafür benötigten Datenstrukturen, Analysekonfigurationen und Client-Darstellungen werden dynamisch aus zentralen Kategoriedefinitionen abgeleitet.<br>
 **Problem & Lösung:** <br>
-  Um starre App-Store-Releasezyklen zu umgehen, nutzt das System eine Server-Driven Architecture. Konfigurationsdaten (UI-Sichtbarkeit, zulässige Werte, KI-Analyse-Regeln) werden dynamisch über das App-Schema an die Clients gepusht. Dies erfordert eine präzise Cache-Invalidierung im Backend, ermöglicht es aber, das System agil zu skalieren und neue Kategorien ohne Client-Updates weltweit auszurollen.
+  Neue Kategorien sollen ohne erneuten App-Release bereitgestellt werden können. Deshalb nutzt das System eine Server-Driven Architecture, bei der UI-Konfigurationen, zulässige Merkmalswerte und Analyseparameter dynamisch an die Clients übertragen werden. Eine gezielte Cache-Invalidierung stellt dabei sicher, dass Änderungen konsistent übernommen werden.
 
 ### DevOps & CI/CD Pipeline
 
-Die Deployment-Pipeline wird durch einen Merge in den `main`-Branch getriggert und durchläuft eine dreistufige Validierung, um fehlerhafte Deployments zu verhindern:
+Die Deployment-Pipeline wird durch einen Merge in den `main`-Branch ausgelöst und durchläuft eine dreistufige Validierung, um fehlerhafte Deployments zu verhindern:
 
-* **Phase 1: Unit Tests & Image Build (Sandbox):** In einer geschlossenen Build-Stage wird der Code validiert. Um unbemerkt teure API-Aufrufe zu blockieren, sperrt `pytest-socket` sämtliche Netzwerkschnittstellen. Externe Abhängigkeiten werden gemockt (SQLite In-Memory). Bei 100 % Test-Erfolg wird das finale Docker-Image gebaut.
-* **Phase 2: Automated Integration Testing (Azure Container Apps Jobs):** Die Pipeline triggert automatisch einen Azure Container Apps Job, der das Image im Zusammenspiel mit einer separaten Test-Datenbank validiert (Datenbank-Migrationen und Service-Kommunikation).
-* **Phase 3: Production Deployment (Revision Gating):** Nach erfolgreichem Integrationstest rollt die Pipeline das validierte Image als neue **Azure Container App Revision** aus (Zero-Downtime).
-
+* **Phase 1: Unit Tests & Image Build (Sandbox):** Der Code wird zunächst in einer isolierten Build-Stage validiert. `pytest-socket` blockiert Netzwerkzugriffe während der Tests, um unbeabsichtigte externe API-Aufrufe zu verhindern. Externe Services werden gemockt, Datenbanktests laufen gegen SQLite In-Memory. Nach erfolgreichem Abschluss aller Tests wird das Docker-Image gebaut.
+* **Phase 2: Automated Integration Testing (Azure Container Apps Jobs):** Die Pipeline startet automatisch einen Azure Container Apps Job, der das erzeugte Image gegen eine separate Testumgebung validiert, einschließlich Datenbank-Migrationen und Service-Kommunikation.
+* **Phase 3: Production Deployment (Revision Gating):** Erst nach erfolgreichem Integrationstest wird das validierte Image als neue **Azure Container App Revision** ausgerollt (Zero-Downtime).
 ---
 
 ## Hauptfunktionen & UX
 
-### 1. Kamera-Scan & Interaktive Erkennung
+### 1. Kamera-Scan & Interaktive Multi-Object-Erkennung
 
 <p align="center">
   <img src="assets/scan-example.PNG" width="250"><br>
-  <sub>Live-Segmentierung via SAM 2</sub>
+  <sub>On-Device-Segmentierung via SAM 2</sub>
 </p>
 
-Die App erkennt Gegenstände in Echtzeit und legt interaktive SVG-Masken über das Bild. Ein Klick auf die Maske öffnet die Detailansicht mit erkannten Merkmalen und einer ersten Wertschätzung.
+Die App segmentiert mehrere Gegenstände innerhalb eines Bildes und legt interaktive Masken über die erkannten Objekte. Nutzer können einen Gegenstand gezielt auswählen und erhalten anschließend die erkannten Merkmale sowie eine erste Marktwertschätzung.
 
-### 2. Sammlungsverwaltung & Navigation
+### 2. Sammlungsverwaltung & Merkmalsbasierte Neubewertung
 
 <p align="center">
   <img src="assets/category-page.jpg" width="250"><br>
   <sub>Kachel-Ansicht der Sammlung</sub>
 </p>
 
-Eine hierarchische Struktur sorgt für Übersichtlichkeit: Globale Übersicht für alle aktiven Kategorien, Kategorie-Ansicht als Kachel-Liste und eine Detail-Ansicht für vollständige Daten (Bild, Name, anpassbare Merkmale) pro Gegenstand.
+Eine hierarchische Struktur bietet eine globale Übersicht über alle aktiven Kategorien, kategoriebasierte Sammlungsansichten und Detailseiten einzelner Gegenstände. Erkannte Merkmale können nachträglich angepasst werden; wertrelevante Änderungen führen automatisch zu einer aktualisierten Modellschätzung.
 
 ### 3. Automatisierte Markt-Recherche & Preis-Updates
 
-Die App hält das Portfolio auf dem neuesten Stand. Im Hintergrund sucht das System nach echten, merkmalsbasierten Marktpreisen. Die Wertschätzungen aller gespeicherten Gegenstände werden vollautomatisiert und kontinuierlich aktualisiert.
+Im Hintergrund werden reale, merkmalsbezogene Marktdaten recherchiert und für die Preisbewertung aufbereitet. Neue Marktdaten fließen unabhängig vom Scan-Prozess in zukünftige Modellschätzungen und Preisaktualisierungen ein.
 
 ### 4. Wertentwicklung & Datenvisualisierung
 
@@ -137,29 +136,29 @@ Die App hält das Portfolio auf dem neuesten Stand. Im Hintergrund sucht das Sys
   <sub>Wertermittlung Beispiel 7 Tage</sub>
 </p>
 
-Nutzer können den historischen Preis-Trend (Portfolio-Graphen) über die gesamte Sammlung hinweg verfolgen oder die Preisentwicklung auf Ebene einzelner Kategorien und spezifischer Gegenstände analysieren.
+Nutzer können die historische Wertentwicklung ihrer gesamten Sammlung sowie einzelner Kategorien und Gegenstände analysieren.
 
-### 5. Dynamische Kategorien-Wahl & Abonnements
+### 5. Dynamische Kategorien-Auswahl
 
 <p align="center">
   <img src="assets/Category_Change.jpg" width="250"><br>
   <sub>Kategorien Übersicht</sub>
 </p>
 
-Nutzer können ihr Set an aktiven Kategorien aus einem Pool live geschalteter Sammelgebiete frei zusammenstellen.
+Nutzer können aus den serverseitig freigeschalteten Gegenstandskategorien individuell auswählen, welche Bereiche in ihrer App aktiv sein sollen.
 
 ### 6. Mehrsprachigkeit (On-the-Fly)
 
-Nahtlose Sprachumschaltung (Deutsch/Englisch) der Benutzeroberfläche und aller dynamischen Inhalte direkt in den Einstellungen, ohne Neustart der App.
+Die Benutzeroberfläche und dynamische Inhalte können direkt in den Einstellungen zwischen Deutsch und Englisch umgeschaltet werden – ohne Neustart der App.
 
 ### 7. User-Accounts & Data Security
 
 <p align="center">
   <img src="assets/Register.jpg" width="250"><br>
-  <sub>Sichere Nutzer-Registrierung</sub>
+  <sub>Nutzer-Registrierung</sub>
 </p>
 
-Nutzer-Accounts und JWT-basierte Authentifizierung sichern den Zugriff auf geschützte Backend-Funktionen. Persönliche Sammlungsdaten werden lokal in SQLite auf dem Endgerät gespeichert.
+JWT-basierte Authentifizierung schützt den Zugriff auf benutzerspezifische Backend-Funktionen. Persönliche Sammlungsdaten werden lokal in SQLite auf dem Endgerät gespeichert.
 
 ### 8. Admin-Dashboard & Live-Analytics
 
@@ -176,11 +175,10 @@ Nutzer-Accounts und JWT-basierte Authentifizierung sichern den Zugriff auf gesch
   </tr>
 </table>
 
-Administratoren können neue Kategorien, Merkmale und UI-Labels zur Laufzeit erstellen, ändern und freischalten. Das Admin-Dashboard bietet zudem Live-Analytics zu Scan-Dauer, Verarbeitungsvolumen und API-Kosten.
+Administratoren können Kategorien, Merkmale und UI-Konfigurationen zur Laufzeit verwalten und freischalten. Das Dashboard visualisiert zusätzlich technische Kennzahlen wie Scan-Dauer, Verarbeitungsvolumen und API-Kosten.
 
 ---
 
 ## Roadmap
 
-- **AI Price Insights:** Kontextbezogener Agent mit Tool Calling zur Analyse und Erklärung von Preisprognosen, Merkmalen, Vergleichsdaten und Preisänderungen.
-
+- **AI Price Insights:** Kontextbezogene Analyse und Erklärung von Preisprognosen, Merkmalen, Vergleichsdaten und Preisänderungen.
