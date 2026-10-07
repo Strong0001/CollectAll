@@ -178,5 +178,9 @@ Cloud-Synchronisierung und ein sicheres Authentifizierungssystem ermöglichen de
 
 Autorisierte Accounts können neue Kategorien, Merkmale und UI-Labels zur Laufzeit erstellen und freischalten. Das Dashboard bietet zudem Live-Analytics zur Überwachung von Systemdaten wie durchschnittlicher Scan-Dauer, Verarbeitungsvolumen und exakten API-Kosten in Echtzeit.
 
+---
 
+## Roadmap
+
+- **AI Price Insights:** Kontextbezogener Agent mit Tool Calling zur Analyse und Erklärung von Preisprognosen, Merkmalen, Vergleichsdaten und Preisänderungen.
 
