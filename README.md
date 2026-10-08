@@ -76,6 +76,11 @@ Um das System bei einer wachsenden Anzahl an Kategorien kosteneffizient und perf
 **Problem & Lösung:** <br>
   Eine direkte Übergabe großer Referenzlisten bekannter Gegenstände an das LLM würde Tokenverbrauch und Latenz mit wachsendem Datenbestand stark erhöhen. Stattdessen erzeugt die KI eine freie Objektbezeichnung, die das Backend anschließend über semantisches Matching fehlertolerant einem bekannten Datenbankeintrag zuordnet. Dadurch bleibt die Analyse auch bei großen Datenbeständen performant, ohne umfangreiche Referenzdaten in jedem Request übertragen zu müssen.
 
+* **AI Price Insights: Structured RAG & Tool Calling:**<br>
+Ein kontextbezogener KI-Assistent beantwortet Fragen zur Bewertung eines aktuell betrachteten Gegenstands. Dafür kann das LLM über kontrollierte Backend-Tools relevante Gegenstands-, Merkmals-, Bewertungs- und Marktdaten aus dem System abrufen und als zusätzlichen Kontext für die Antwort verwenden.<br>
+**Problem & Lösung:** <br>
+  Ein LLM besitzt keinen direkten Zugriff auf die aktuellen, gegenstandsspezifischen Daten der Anwendung und könnte Bewertungserklärungen andernfalls nur allgemein formulieren. Durch Structured RAG und Tool Calling werden gezielt die für eine Nutzerfrage benötigten Daten abgerufen und der Generierung als Kontext bereitgestellt. Dadurch entstehen nachvollziehbare, auf den tatsächlichen Systemdaten basierende Antworten, ohne große Datenmengen dauerhaft in den Prompt aufnehmen zu müssen.
+  
 * **Distributed Caching & Concurrency Control (Redis):**<br>
 Um Latenzen zu minimieren und denselben Datenstand über mehrere zustandslose Backend-Replikate hinweg zu garantieren, werden Systemdaten in über 10 logisch getrennten Cache-Bereichen in Redis vorgehalten.<br>
 **Problem & Lösung:** <br>
@@ -177,8 +182,3 @@ JWT-basierte Authentifizierung schützt den Zugriff auf benutzerspezifische Back
 
 Administratoren können Kategorien, Merkmale und UI-Konfigurationen zur Laufzeit verwalten und freischalten. Das Dashboard visualisiert zusätzlich technische Kennzahlen wie Scan-Dauer, Verarbeitungsvolumen und API-Kosten.
 
----
-
-## Roadmap
-
-- **AI Price Insights:** Kontextbezogene Analyse und Erklärung von Preisprognosen, Merkmalen, Vergleichsdaten und Preisänderungen.
