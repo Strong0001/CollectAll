@@ -11,7 +11,13 @@ https://github.com/user-attachments/assets/91729379-4464-4555-9b41-2fad0eb0a9d6
 
 ## Einleitung
 
-CollectAll ist eine Full-Stack-Anwendung zur kamerabasierten Erfassung und Bewertung von Gegenständen. Eine On-Device-ML-Pipeline segmentiert mehrere Gegenstände innerhalb eines Bildes und ermöglicht deren gezielte Auswahl. Erkannte Gegenstände werden anhand kategorispezifischer Merkmale analysiert und durch trainierte ML-Modelle bewertet. Änderungen wertrelevanter Merkmale führen zu einer aktualisierten Schätzung.
+
+CollectAll ist eine Full-Stack-Anwendung zur kamerabasierten Erfassung und Bewertung von Gegenständen. Eine On-Device-ML-Pipeline segmentiert mehrere Gegenstände innerhalb eines Bildes und ermöglicht deren gezielte Auswahl.
+
+Die anschließende KI-Analyse erfolgt über einen vierstufigen, parallelisierten LLM-Workflow. Dieser erkennt einzelne Objekte, ordnet sie den passenden Kategorien zu, prüft mögliche Zusammengehörigkeiten und extrahiert kategoriespezifische Merkmale als strukturierte JSON-Daten.
+
+Anschließend werden die erkannten Gegenstände durch trainierte ML-Modelle bewertet. Änderungen wertrelevanter Merkmale führen zu einer aktualisierten Schätzung.
+
 
 > **Projekt-Status:** Der Quellcode dieses Projekts ist aktuell privat. Dieses Repository dient als Architektur-Dokumentation und Portfolio-Showcase für Systemdesign, KI-Integration und CI/CD-Pipelines.
 
@@ -70,11 +76,17 @@ Dieses Projekt wurde mit Fokus auf Kostenoptimierung, Latenzreduzierung und Ausf
 Die rechenintensive Generierung der Bild-Embeddings für die Segmentierung wurde als ONNX-Modell auf das Endgerät des Nutzers ausgelagert. Diese lokale Edge-Inferenz läuft asynchron und parallel zur KI-Analyse im Backend.<br>
 **Problem & Lösung:** <br>
   Um den Scan-Vorgang durch überlappende Ladezeiten zu beschleunigen und nutzerproportionale Compute-Ressourcen (GPUs) im Azure-Backend zu vermeiden, wird die schwere Rechenlast stabil auf die Client-Geräte verteilt.
-  
+
+
+* **Multimodale Objektanalyse & LLM-Orchestrierung:**<br>
+Ein vierstufiger, parallelisierter LLM-Workflow erkennt mehrere Objekte innerhalb eines Bildes, ordnet sie den passenden Kategorien zu und prüft mögliche Zusammengehörigkeiten. Anschließend werden die Gegenstände anhand kategoriespezifischer Vorgaben analysiert und ihre Merkmale als strukturierte JSON-Daten ausgegeben.<br>
+**Problem & Lösung:**<br>
+Bei der Analyse komplexer Bilder können einzelne Objekte übersehen, falsch zugeordnet oder zusammengehörige Gegenstände mehrfach erfasst werden. Statt einer einzigen umfassenden LLM-Analyse nutzt das System spezialisierte Verarbeitungsschritte mit gezielten Überprüfungen. Unabhängige Aufgaben werden parallel ausgeführt, um die zusätzliche Latenz möglichst gering zu halten.
+
 * **LLM-Skalierung: Context Caching & Semantic Matching:**<br>
 Um das System bei einer wachsenden Anzahl an Kategorien kosteneffizient und performant zu halten, trennt die Architektur statische und scanabhängige Kontextinformationen. Wiederverwendbare Prompt-Anteile werden gecacht, während pro Scan nur die tatsächlich benötigten dynamischen Informationen verarbeitet werden.<br>
 **Problem & Lösung:** <br>
-  Eine direkte Übergabe großer Referenzlisten bekannter Gegenstände an das LLM würde Tokenverbrauch und Latenz mit wachsendem Datenbestand stark erhöhen. Stattdessen erzeugt die KI eine freie Objektbezeichnung, die das Backend anschließend über semantisches Matching fehlertolerant einem bekannten Datenbankeintrag zuordnet. Dadurch bleibt die Analyse auch bei großen Datenbeständen performant, ohne umfangreiche Referenzdaten in jedem Request übertragen zu müssen.
+  Eine direkte Übergabe großer Referenzlisten bekannter Gegenstände an das LLM würde Tokenverbrauch und Latenz mit wachsendem Datenbestand stark erhöhen. Stattdessen erzeugt die KI eine freie Objektbezeichnung, die das Backend anschließend mithilfe von Embeddings und Redis Vector Search fehlertolerant einem bekannten Datenbankeintrag zuordnet. Dadurch bleibt die Analyse auch bei großen Datenbeständen performant, ohne umfangreiche Referenzdaten in jedem Request übertragen zu müssen.
 
 * **AI Price Insights: Structured RAG & Tool Calling:**<br>
 Ein kontextbezogener KI-Assistent beantwortet Fragen zur Bewertung eines aktuell betrachteten Gegenstands. Dafür kann das LLM über kontrollierte Backend-Tools relevante Gegenstands-, Merkmals-, Bewertungs- und Marktdaten aus dem System abrufen und als zusätzlichen Kontext für die Antwort verwenden.<br>
